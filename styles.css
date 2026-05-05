@@ -309,3 +309,35 @@ footer {
     padding-top: 20px;
     border-top: 1px solid var(--border);
 }
+
+/* ===== IMAGE PROMPT BLOCK ===== */
+.image-prompt-block {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 2px dashed var(--border);
+}
+
+.image-prompt-block h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.image-prompt-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+}
+
+.btn-image {
+    background: linear-gradient(135deg, #7c4daf 0%, #5e3590 100%);
+    color: #fff;
+}
+
+.btn-image:hover {
+    background: linear-gradient(135deg, #5e3590 0%, #4a2572 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
