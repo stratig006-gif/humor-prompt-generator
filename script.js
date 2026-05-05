@@ -423,7 +423,7 @@ function updateComboCounter() {
 
 // ===== ОСНОВНАЯ ЛОГИКА =====
 
-const selects = ['surname','location','husbandJob','wifeJob','children','guest','weather','situation','length'];
+const selects = ['surname','location','husbandJob','wifeJob','children','guest','weather','situation','narrative','tone','twist','title_style','symbol','length'];
 
 function generatePrompt() {
     let allFilled = true;
@@ -473,6 +473,11 @@ ${childrenText}
 👴 ГОСТЬ: ${values.guest} — приехал погостить
 🌦 ПОГОДА: ${values.weather}
 🎬 СЮЖЕТНАЯ ЗАВЯЗКА: ${values.situation}
+⏳ ТОЧКА ВХОДА В ИСТОРИЮ: ${values.narrative}
+🎙 ТОН ПОВЕСТВОВАНИЯ: ${values.tone}
+🔄 НЕОЖИДАННЫЙ ПОВОРОТ: ${values.twist}
+📰 СТИЛЬ ЗАГОЛОВКА: ${values.title_style}
+🏆 КОМИЧЕСКИЙ СИМВОЛ: ${values.symbol}
 📏 ОБЪЁМ: ${values.length}
 
 ═══════════════════════════════════════════
@@ -515,6 +520,44 @@ ${childrenText}
 ✅ Обычные абзацы, разделённые пустой строкой
 ✅ Прямая речь через тире, как принято в русской литературе
 ✅ Естественные переходы: «Через час...», «На следующее утро...», «Тем временем...»
+
+═══════════════════════════════════════════
+КАК ИСПОЛЬЗОВАТЬ НОВЫЕ ПАРАМЕТРЫ
+═══════════════════════════════════════════
+
+⏳ ТОЧКА ВХОДА — определяет структуру подачи:
+• Хронология: начни с тихого утра — и веди к нарастающему хаосу
+• С кульминации: первая фраза — самый безумный момент. «В тот день пожарные приехали дважды.» — и дальше как дошло
+• Из будущего: «Прошло три года, а мы до сих пор смеёмся» — рассказчик уже в безопасности, это расслабляет читателя
+• In medias res: начни с середины действия, без объяснений — читатель разберётся по ходу
+• От очевидца: сосед/коллега видел только часть — его ограниченный взгляд создаёт дополнительный комический эффект
+
+🎙 ТОН — задаёт голос всего рассказа:
+• Лёгкий/искристый: короткие фразы, быстрый темп, каждое предложение с искрой
+• Ностальгический: медленнее, с отступлениями «помню, раньше...», тепло и чуть грустно
+• Саркастический: рассказчик — наблюдатель, видит нелепость, называет вещи своими именами
+• Нарастающий абсурд: первые сцены — реалистичные, с каждой страницей становится безумнее
+• Репортажный: официальные формулировки + бытовой хаос = автоматический юмор
+
+🔄 ПОВОРОТ — встрой органично, не как сюрприз из рукава:
+• Гость-спаситель: его странный навык должен упоминаться в начале как странность
+• Ребёнок решает: пусть он весь рассказ кажется помехой — и вдруг находит решение
+• Животное виновник: вводи его как невинную деталь — и постепенно раскрывай масштаб
+• Хаос = лучший результат: покажи в финале что «по плану» было бы хуже
+• Все знали: добавь в каждую сцену один маленький намёк который понятен при перечитывании
+
+📰 ЗАГОЛОВОК — строго по выбранному стилю:
+• Профессия+катастрофа: используй КОНКРЕТНЫЕ детали профессии мужа/жены
+• Цитата: найди в рассказе самую нелепую реплику и вынеси её
+• Обманутые ожидания: заголовок должен быть оптимистичным — а история разрушает этот оптимизм
+• Перечисление: три пункта, каждый нелепее предыдущего
+• Вопрос: задай его от первого лица, ответ — ироничный
+
+🏆 КОМИЧЕСКИЙ СИМВОЛ — красная нить через весь рассказ:
+• Символ появляется в первой сцене как обычный предмет
+• Вокруг него нарастает хаос — он мешает, ломается, пропадает, возникает не там
+• В кульминации символ в центре главной катастрофы
+• В финале — символ обретает новый смысл или статус («теперь это семейная легенда»)
 
 ═══════════════════════════════════════════
 ВНУТРЕННИЙ ПЛАН РАССКАЗА (для тебя, не для вывода)
@@ -698,6 +741,67 @@ function randomSelect() {
     document.getElementById('length').value = pick(lengthOptions);
     document.getElementById('length').style.borderColor = '';
 
+    // Точка входа
+    const narrativeOptions = [
+        'Классическая хронология: история рассказывается от начала до конца — читатель проживает хаос вместе с семьёй',
+        'С кульминации: рассказ начинается с самого безумного момента, потом — как до этого дошло',
+        'Из будущего: рассказчик уже пережил это и вспоминает с усмешкой — «это был худший/лучший день в нашей жизни»',
+        'In medias res: читатель попадает в разгар хаоса — что происходит, непонятно, всё проясняется по ходу',
+        'От лица очевидца: сосед, коллега или случайный свидетель рассказывает о том, что видел — взгляд снаружи делает ситуацию вдвойне смешнее'
+    ];
+    document.getElementById('narrative').value = pick(narrativeOptions);
+    document.getElementById('narrative').style.borderColor = '';
+
+    // Тон
+    const toneOptions = [
+        'Лёгкий и искристый: всё происходит быстро, реплики летят как искры, темп нарастает — читатель не успевает отдышаться',
+        'Тёплый и ностальгический: юмор добрый, немного грустный, «было же время» — читатель улыбается со слезой',
+        'Саркастический от первого лица: рассказчик иронизирует над собой и близкими, но с любовью',
+        'Нарастающий абсурд: начинается с обычной жизни, постепенно становится всё безумнее — финал полный сюрреализм',
+        'Репортажный: как будто журналист описывает семейную катастрофу — сухо, официально, что делает это вдвойне смешнее'
+    ];
+    document.getElementById('tone').value = pick(toneOptions);
+    document.getElementById('tone').style.borderColor = '';
+
+    // Поворот
+    const twistOptions = [
+        'Без поворота: история идёт по нарастающей — сила в деталях и характерах',
+        'Гость оказывается неожиданно полезным: его странный опыт или навык решает неразрешимую проблему',
+        'Ребёнок всё решает: самый маленький или самый неожиданный член семьи находит выход там, где взрослые провалились',
+        'Сосед или случайный прохожий становится ключевым персонажем финала',
+        'Выясняется, что вся ситуация была спровоцирована домашним животным — кот/пёс всё подстроил',
+        'Муж и жена менялись ролями весь рассказ — и в финале выясняется, что каждый тайно завидовал профессии другого',
+        'Хаос случайно приводит к лучшему результату, чем если бы всё пошло по плану',
+        'Все всё знали заранее, но молчали — финальное раскрытие взрывает всю историю'
+    ];
+    document.getElementById('twist').value = pick(twistOptions);
+    document.getElementById('twist').style.borderColor = '';
+
+    // Заголовок
+    const titleOptions = [
+        'Профессия + катастрофа: заголовок строится на контрасте профессии и нелепой ситуации. Пример: «Хирург с руками-золото починил кран — теперь вода только горячая и только по вторникам»',
+        'Цитата персонажа как заголовок: самая смешная или нелепая фраза из рассказа выносится в заголовок. Пример: «Папа сказал \'я справлюсь\'. Пожарные приехали через 20 минут.»',
+        'Обманутые ожидания: заголовок обещает одно, история даёт другое. Пример: «Решили сделать ремонт за выходные» (а он длился полгода)',
+        'Перечисление нарастающего безумия: «Сначала сломался лифт. Потом кот съел торт. Потом приехала тёща.»',
+        'Вопрос с неочевидным ответом: «Сколько электриков нужно, чтобы сломать новый телевизор?» (Один. Если это мой муж.)'
+    ];
+    document.getElementById('title_style').value = pick(titleOptions);
+    document.getElementById('title_style').style.borderColor = '';
+
+    // Символ
+    const symbolOptions = [
+        'Предмет бытовой техники (пылесос, холодильник, стиральная машина) — ломается в самый неподходящий момент и становится центром хаоса',
+        'Торт или блюдо для праздника — которое не получилось, упало, было съедено не теми или стало причиной катастрофы',
+        'Домашнее животное (кот, пёс, попугай) — невольный виновник всех событий',
+        'Подарок или покупка — которая оказалась совсем не тем, чем казалась',
+        'Инструмент или гаджет, который муж купил и попытался применить',
+        'Одежда или аксессуар — перепутанный, надетый не так, ставший причиной конфуза',
+        'Транспорт (машина, велосипед, самокат) — отказавший в самый неподходящий момент',
+        'Без конкретного символа — юмор в цепи событий и репликах'
+    ];
+    document.getElementById('symbol').value = pick(symbolOptions);
+    document.getElementById('symbol').style.borderColor = '';
+
     generatePrompt();
 }
 
@@ -802,8 +906,8 @@ function fallbackCopyImage(text, statusEl) {
 }
 
 // Генерация промпта для обложки (юмористический стиль)
+// Одна живая сцена из ключевого момента истории
 function generateImagePrompt(values) {
-    // Определяем количество детей из типа состава
     const childCount = {
         'one_girl': 1, 'one_boy': 1,
         'two_girls': 2, 'two_boys': 2, 'boy_girl': 2,
@@ -812,42 +916,83 @@ function generateImagePrompt(values) {
     const kids = childCount[values.children] || 1;
     const childDesc = kids === 1 ? 'one school-age child' : kids === 2 ? 'two school-age children' : 'three school-age children';
 
-    // Определяем тип локации для фона
+    // Ключевая сцена из ситуации
+    const situationScene = {
+        'лифт': 'entire family crammed in a stuck elevator, exaggerated panicked expressions, bags and luggage everywhere',
+        'кошка съела': 'family gathered around a cat that is visibly guilty, car keys visible nearby, cat looking indifferent',
+        'чемоданы': 'family at airport baggage claim, holding someone else\'s suitcase, confused expressions, strangers approaching',
+        'суши': 'family at dinner table staring at a pizza instead of sushi, delivery boxes open, everyone has different reactions',
+        'диван': 'oversized sofa stuck in doorway, husband pushing one side, wife pulling other, children watching',
+        'свекровь': 'crowded apartment, unexpected relatives arriving at door with luggage, family inside with horrified expressions',
+        'собака': 'giant dog squeezing into small apartment, family trying to contain it, chaos everywhere',
+        'пожарные': 'family outside house looking sheepish, two fire trucks, firefighters, smoke from kitchen window',
+        'свет отключили': 'family celebrating New Year by candlelight, improvised party, warm chaos',
+        'робот-пылесос': 'robotic vacuum chasing cat around living room, family watching helplessly',
+        'ремонт': 'family living among construction materials, eating on toolboxes, dust everywhere',
+        'хомяк': 'entire family on hands and knees searching for escaped hamster, furniture moved',
+        'IKEA': 'family surrounded by furniture pieces, instruction manual on floor, husband looking at it upside down',
+        'медведь': 'family at dacha, bear visible near garden shed, family watching from window in disbelief',
+        'такси': 'family crammed into tiny vintage car, looking surprised and amused',
+        'GPS': 'family car in middle of field, everyone looking at phone maps, confused',
+        'стрижка': 'husband with very bad home haircut, looking in mirror, wife with scissors looking apologetic',
+        'TikTok': 'teenage girl filming family chaos on phone, parents unaware, comments appearing',
+    };
+
+    let scene = 'Russian family caught in a hilariously chaotic domestic situation — all members visible, each with a different comic expression, warm authentic home setting';
+    for (const [key, val] of Object.entries(situationScene)) {
+        if (values.situation && values.situation.toLowerCase().includes(key.toLowerCase())) {
+            scene = val; break;
+        }
+    }
+
+    // Атмосфера из локации
     const isCity = cities.includes(values.location);
     const isVillage = villages.includes(values.location) || villagesSmall.includes(values.location);
     const bgDesc = isCity
-        ? `Russian city street background with recognizable urban architecture`
+        ? 'Russian city apartment interior, typical urban setting, lived-in details'
         : isVillage
-        ? `Russian village or countryside background, wooden houses, nature`
-        : `Russian suburban area, modern residential district`;
+        ? 'Russian village or dacha setting, wooden interior or garden, rustic details'
+        : 'Russian suburban house, comfortable family home interior';
 
-    // Определяем погодную атмосферу
-    let weatherDesc = 'natural daylight';
+    // Погодная атмосфера
+    let weatherMood = 'natural indoor lighting';
     if (values.weather) {
-        if (values.weather.includes('мороз') || values.weather.includes('январ') || values.weather.includes('февраль') || values.weather.includes('снег')) weatherDesc = 'winter setting, snow on the ground, cold light';
-        else if (values.weather.includes('жар') || values.weather.includes('июль') || values.weather.includes('июнь')) weatherDesc = 'bright summer sunlight, warm atmosphere';
-        else if (values.weather.includes('дождь') || values.weather.includes('гроза') || values.weather.includes('ливень')) weatherDesc = 'dramatic rainy weather, dark clouds, wet streets';
-        else if (values.weather.includes('осен') || values.weather.includes('октябр')) weatherDesc = 'autumn setting, fallen leaves, overcast sky';
-        else if (values.weather.includes('весен') || values.weather.includes('май') || values.weather.includes('апрел')) weatherDesc = 'spring atmosphere, fresh light';
+        if (values.weather.includes('мороз') || values.weather.includes('снег') || values.weather.includes('пурга'))
+            weatherMood = 'winter light through frosted windows, cozy indoor warmth';
+        else if (values.weather.includes('жар') || values.weather.includes('июль') || values.weather.includes('зной'))
+            weatherMood = 'bright summer sunlight, warm golden tones';
+        else if (values.weather.includes('дождь') || values.weather.includes('гроза'))
+            weatherMood = 'dramatic rainy light through windows, grey sky outside contrasting with warm interior';
+        else if (values.weather.includes('осен'))
+            weatherMood = 'soft autumn light, warm amber tones';
     }
 
-    // Определяем профессии для внешности
-    const husbandJob = values.husbandJob || 'worker';
-    const wifeJob = values.wifeJob || 'professional woman';
+    // Символ в кадре
+    const symbolProp = {
+        'бытовой техники': 'broken appliance prominently visible in the scene',
+        'Торт': 'disastrous cake or food item as the centerpiece of the chaos',
+        'животное': 'mischievous pet (cat or dog) as the obvious culprit in the scene',
+        'Подарок': 'unexpected or wrong gift/purchase creating confusion',
+        'Инструмент': 'tools or gadget clearly misused by the husband',
+        'Одежда': 'clothing item worn wrong or causing embarrassing situation',
+        'Транспорт': 'broken-down vehicle visible in background or foreground',
+    };
+    let symbolInScene = '';
+    for (const [key, val] of Object.entries(symbolProp)) {
+        if (values.symbol && values.symbol.includes(key)) { symbolInScene = val; break; }
+    }
 
-    return `Cinematic comedy family photo for a Russian humor story cover, horizontal 16:9 format, photorealistic, high quality, vibrant colors.
+    return `Cinematic photorealistic comedy cover image for a Russian family humor story. Horizontal 16:9 format, high quality. No text, no watermarks, no logos.
 
-Scene: A chaotic and funny family moment featuring:
-- Husband (Russian man in his 30s-40s, appearance fitting a ${husbandJob}, expressive surprised or confused face)
-- Wife (Russian woman in her 30s-40s, appearance fitting a ${wifeJob}, reacting with exasperation or laughter)
-- ${childDesc} (each with a distinct personality shown through their expression and action)
-- One elderly guest (grandparent or relative, adding generational humor to the scene)
+Scene: ${scene}.${symbolInScene ? ' ' + symbolInScene + '.' : ''}
 
-All characters visible together in one frame, each reacting differently to the chaotic situation, exaggerated comedic expressions but photorealistic style.
+Characters: Russian husband (appearance fitting a ${values.husbandJob || 'working man'}), Russian wife (appearance fitting a ${values.wifeJob || 'professional woman'}), ${childDesc}, and one elderly guest/relative — all visible in the frame, each with a distinct comic expression reacting to the chaos.
 
-Background: ${bgDesc}, ${weatherDesc}.
+Setting: ${bgDesc}.
 
-Style: warm cinematic photorealism, bright natural colors, sharp focus on all characters, professional photography quality, dynamic composition, joyful family energy. Similar to Russian comedy film poster aesthetic. No text, no watermarks, no logos.
+Lighting and mood: ${weatherMood}. Warm, vibrant, joyful energy despite the chaos.
 
-Technical: 16:9 aspect ratio, 1280x720px minimum, high detail, realistic skin textures, dynamic natural lighting, all faces clearly visible.`;
+Style: cinematic photorealism, bright natural colors, sharp focus on all characters' faces, documentary-style "caught in the moment" composition. Authentic Russian family environment — real furniture, real clutter, real details. Not staged — looks like a genuine chaotic moment photographed.
+
+Technical: 16:9 aspect ratio, 1280x720px minimum, high detail, all faces clearly visible and expressive, natural lighting.`;
 }
