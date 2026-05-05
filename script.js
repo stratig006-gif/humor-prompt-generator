@@ -648,6 +648,11 @@ ${childrenText}
 🚨 ФИНАЛЬНОЕ НАПОМИНАНИЕ: убедись, что объём текста попадает в указанный диапазон слов. Если вышло короче нижней границы — продолжай писать, расширяя сцены и диалоги. Не останавливайся, пока не достигнешь нижней границы.`;
 
     document.getElementById('promptOutput').textContent = prompt;
+
+    // Генерируем промпт для изображения
+    const imagePrompt = generateImagePrompt(values);
+    document.getElementById('imagePromptOutput').textContent = imagePrompt;
+
     document.getElementById('resultCard').style.display = 'block';
     setTimeout(() => {
         document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -761,9 +766,88 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('geminiBtn').addEventListener('click', openGemini);
     document.getElementById('claudeBtn').addEventListener('click', openClaude);
 
+    const copyImageBtn = document.getElementById('copyImageBtn');
+    const copyImageStatus = document.getElementById('copyImageStatus');
+    if (copyImageBtn) {
+        copyImageBtn.addEventListener('click', () => {
+            const text = document.getElementById('imagePromptOutput').textContent;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyImageStatus.textContent = '✅ Промпт для обложки скопирован!';
+                    copyImageStatus.style.opacity = '1';
+                    setTimeout(() => { copyImageStatus.style.opacity = '0'; }, 3000);
+                }).catch(() => fallbackCopyImage(text, copyImageStatus));
+            } else { fallbackCopyImage(text, copyImageStatus); }
+        });
+    }
+
     selects.forEach(id => {
         document.getElementById(id).addEventListener('change', () => {
             document.getElementById(id).style.borderColor = '';
         });
     });
 });
+
+function fallbackCopyImage(text, statusEl) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-999999px';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try {
+        const ok = document.execCommand('copy');
+        statusEl.textContent = ok ? '✅ Скопировано!' : '❌ Не удалось скопировать.';
+    } catch { statusEl.textContent = '❌ Скопируйте вручную.'; }
+    statusEl.style.opacity = '1';
+    setTimeout(() => { statusEl.style.opacity = '0'; }, 3000);
+    document.body.removeChild(ta);
+}
+
+// Генерация промпта для обложки (юмористический стиль)
+function generateImagePrompt(values) {
+    // Определяем количество детей из типа состава
+    const childCount = {
+        'one_girl': 1, 'one_boy': 1,
+        'two_girls': 2, 'two_boys': 2, 'boy_girl': 2,
+        'three_mixed_1': 3, 'three_mixed_2': 3, 'three_girls': 3, 'three_boys': 3
+    };
+    const kids = childCount[values.children] || 1;
+    const childDesc = kids === 1 ? 'one school-age child' : kids === 2 ? 'two school-age children' : 'three school-age children';
+
+    // Определяем тип локации для фона
+    const isCity = cities.includes(values.location);
+    const isVillage = villages.includes(values.location) || villagesSmall.includes(values.location);
+    const bgDesc = isCity
+        ? `Russian city street background with recognizable urban architecture`
+        : isVillage
+        ? `Russian village or countryside background, wooden houses, nature`
+        : `Russian suburban area, modern residential district`;
+
+    // Определяем погодную атмосферу
+    let weatherDesc = 'natural daylight';
+    if (values.weather) {
+        if (values.weather.includes('мороз') || values.weather.includes('январ') || values.weather.includes('февраль') || values.weather.includes('снег')) weatherDesc = 'winter setting, snow on the ground, cold light';
+        else if (values.weather.includes('жар') || values.weather.includes('июль') || values.weather.includes('июнь')) weatherDesc = 'bright summer sunlight, warm atmosphere';
+        else if (values.weather.includes('дождь') || values.weather.includes('гроза') || values.weather.includes('ливень')) weatherDesc = 'dramatic rainy weather, dark clouds, wet streets';
+        else if (values.weather.includes('осен') || values.weather.includes('октябр')) weatherDesc = 'autumn setting, fallen leaves, overcast sky';
+        else if (values.weather.includes('весен') || values.weather.includes('май') || values.weather.includes('апрел')) weatherDesc = 'spring atmosphere, fresh light';
+    }
+
+    // Определяем профессии для внешности
+    const husbandJob = values.husbandJob || 'worker';
+    const wifeJob = values.wifeJob || 'professional woman';
+
+    return `Cinematic comedy family photo for a Russian humor story cover, horizontal 16:9 format, photorealistic, high quality, vibrant colors.
+
+Scene: A chaotic and funny family moment featuring:
+- Husband (Russian man in his 30s-40s, appearance fitting a ${husbandJob}, expressive surprised or confused face)
+- Wife (Russian woman in her 30s-40s, appearance fitting a ${wifeJob}, reacting with exasperation or laughter)
+- ${childDesc} (each with a distinct personality shown through their expression and action)
+- One elderly guest (grandparent or relative, adding generational humor to the scene)
+
+All characters visible together in one frame, each reacting differently to the chaotic situation, exaggerated comedic expressions but photorealistic style.
+
+Background: ${bgDesc}, ${weatherDesc}.
+
+Style: warm cinematic photorealism, bright natural colors, sharp focus on all characters, professional photography quality, dynamic composition, joyful family energy. Similar to Russian comedy film poster aesthetic. No text, no watermarks, no logos.
+
+Technical: 16:9 aspect ratio, 1280x720px minimum, high detail, realistic skin textures, dynamic natural lighting, all faces clearly visible.`;
+}
